@@ -120,7 +120,3 @@ The header allows the decoder to reconstruct the Huffman Tree and properly decod
 
 - Java Development Kit (JDK)
 - Swing (for GUI)
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
