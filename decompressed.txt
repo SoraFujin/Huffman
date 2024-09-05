@@ -1,29 +1,15 @@
-I am currently working on implementing a program based on the huffman algorithm in Java, and I am at the stage where I need to output the encoded content to a file. I am a bit confused about how to implement the header and eof needed for decoding. For my header at the moment I have all the unique values that occur from the input file and their frequency, but on some articles I have seen people do it with 0 or 1 represents the nodes and then the frequency (which I am a bit puzzled by as it doesn't say what the symbol is).
-
-Also, for the EOF as I understand it I encode it like the symbols so it gets read and decoded, however I am not sure what value I can use for it that will definitely not come up? I know it needs to a weight of 1 but was unsure how to make sure it won't actually be in the file.
-
-I've had to do this once for an assignment and this is the approach we used.
-
-Encoding the header was done by using 0 and 1 to encode the structure of the tree (rather than the frequencies). A "0" denoted moving along the tree, a "1" denoted we were at a leaf node. This resulted in a sort of pre-order traversal of the tree encoding it uniquely.
-
-For example, a tree like (((a b) c) (d e)) would be encoded as "0001a1b1c01d1e", where a,b,c,d,e are their ASCII forms.
-
-Here's the tree in a graphical form:
-For the EOF we used the last 3 bits in the file to specify how many of the last two bytes needed to be read. Once we read the last byte (so we were working on the second last byte) we checked the last 3 bits: They encoded how many more bits to read, minus 6. So 110101xxxxxxx000 meant "read 110101 (6 bits) and discard everything else". 1101011xxxxxx001 meant "read 1101011 (7 bits) and discard the rest", etc.
-
-Doing it this way meant we didn't have to have a special value denoting the EOF and we could still read the file a byte at a time (although we actually needed to read one byte ahead of where we were working).
-
-(For the EOF I haven't read your articles, so I don't know if our idea works with your approach.)
-Huffman encoding specifies how to create the Huffman tree from some sequence of characters and then how to encode that into a sequence of bits.
-
-It doesn't specify how should you encode the tree or how to figure out exactly how many bits to read. The exact count of bits is a problem, because you can save only whole bytes into a file. And so you need some way to figure out exactly at which bit to end.
-
-For encoding the tree, there are several options. One of them is recording the count for each character and letting the decoder reconstruct the tree from that. Other option is to directly encode the tree somehow, for example using the 0-1 approach mange (and I assume the articles you mentioned) describes.
-
-Then there is adaptive Huffman coding which doesn't require the tree at all, but is more complicated.
-
-For deciding when to end, you could write the total count of characters into the file and use that to decide when to stop. Or you could get this count for free if you encoded the tree using character counts.
-
-Another option is to use an EOF character. This is a character that is in your Huffman tree, but doesn't encode any normal value. You could imagine it as a 257th value, assuming you are encoding bytes. (You could use some normal value, like the zero byte, for the EOF token, but that would require you to be absolutely sure it won't be present in the input file.)
-
-
+14
+Start, End
+Start, [A,22,70], [B,8,80], [C,12,80]
+A, [D,8,50], [E,10,70]
+B, [D, 25, 50], [E,10,70]
+C, [D,13,50], [E,13,70]
+D, [F,25,50], [G,30,70], [H,18,70], [I, 27,60]
+E, [F,12,50], [G,10,70], [H,8,70], [I, 7,60]
+F, [J,26,50], [K,13,70], [L,15,60]
+G, [J,8,50], [K,10,70], [L,10,60]
+H, [J,20,50], [K,10,70], [L,10,60]
+I, [J,15,50], [K,10,70], [L,7,60]
+J, [End,10,0]
+K, [End,10,0]
+L, [End,10,0]

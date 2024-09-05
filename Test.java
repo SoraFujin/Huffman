@@ -18,22 +18,29 @@ public class Test {
        decode();
     }
 
-
     public static void encodeData() throws IOException{
        huff.calculateFreq();  
        String encodedData = huff.encode();
        String header = huff.header();
+       double fileSize = huff.getFileSize();
+       double headerSize = huff.getHeaderSize();
+       double encodedDataSize = huff.getCompressedFileSize() ;
+       double compressedSize = headerSize + encodedDataSize;
+       System.out.println("File size: " + fileSize);
+       System.out.println("Header size: " + headerSize);
+       System.out.println("encoded size: " + encodedDataSize);
+       System.out.println("compressed File size: " + compressedSize);
        writeToFile(encodedData, header, compressedFile);
+
     }
 
          
     public static void writeToFile(String encodedData, String header, File file) throws IOException {
-       FileWriter fw = new FileWriter(file);
+       FileWriter fw = new FileWriter(compressedFile);
        fw.write(header);
        fw.write(encodedData);
        fw.close();
     }
-
 
     public static void decode() throws IOException {
        huff.decodeFromFile(compressedFile, outputFile);

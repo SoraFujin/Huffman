@@ -101,8 +101,10 @@ public class Driver extends JFrame {
                 String header = huffman.header();
                 huffman.writeToFile(compressedFile, encodedData);
 
-                long originalSize = chosenFile.length();
-                long compressedSize = compressedFile.length();
+                double originalSize = huffman.getFileSize();
+                double headerSize = huffman.getHeaderSize();
+                double encodedDataSize = huffman.getCompressedFileSize() ;
+                double compressedSize = headerSize + encodedDataSize;
                 double percentageDifference = 100.0 * (originalSize - compressedSize) / originalSize;
 
                 compressedSizeLabel.setText("Compressed File Size: " + compressedSize + " bytes");
@@ -122,15 +124,40 @@ public class Driver extends JFrame {
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File compressedFile = fileChooser.getSelectedFile();
-                File outputFile = new File(compressedFile.getParent(), "decompressed.txt");
-                try {
-                    huffman.decodeFromFile(compressedFile, outputFile);
-                    long compressedSize = compressedFile.length();
-                    long outputSize = outputFile.length();
-                    double percentageDifference = 100.0 * (compressedSize - outputSize) / compressedSize;
 
-                    compressedSizeLabel.setText("Compressed File Size: " + compressedSize + " bytes");
-                    percentageLabel.setText(String.format("Size Difference: %.2f%%", percentageDifference));
+                // Option for user to choose where to save the new file
+                int saveOption = JOptionPane.showOptionDialog(
+                        null,
+                        "Do you want to choose a location for the decompressed file?",
+                        "Choose Save Location",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[] {"Yes", "No"},
+                        "No"
+                        );
+
+                File outputFile;
+                if (saveOption == JOptionPane.YES_OPTION) {
+                    JFileChooser saveFileChooser = new JFileChooser();
+                    saveFileChooser.setDialogTitle("Specify where to save the decompressed file");
+                    int saveReturnValue = saveFileChooser.showSaveDialog(null);
+                    if (saveReturnValue == JFileChooser.APPROVE_OPTION) {
+                        outputFile = saveFileChooser.getSelectedFile();
+                    } else {
+                        statusArea.setText("Saving file was canceled.");
+                        return;
+                    }
+                } else {
+                    outputFile = new File(compressedFile.getParent(), "decompressed.txt");
+                }
+
+                try {
+                    Huffman huffman = new Huffman(compressedFile); 
+                    huffman.decodeFromFile(compressedFile, outputFile);
+
+                    double outputSize = outputFile.length();
+                    compressedSizeLabel.setText("File Size: " + outputSize + " bytes");
                     statusArea.setText("Decoding completed. Decompressed file created at: " + outputFile.getAbsolutePath());
 
                 } catch (IOException ex) {
@@ -144,4 +171,3 @@ public class Driver extends JFrame {
         new Driver();
     }
 }
-

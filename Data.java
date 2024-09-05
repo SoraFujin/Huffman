@@ -8,6 +8,7 @@ import java.io.IOException;
 public class Data {
     // private final File file = new File("/home/ahmad/Desktop/java/Projects/Algorithms/src/main/java/com/algo/Huffman/input.txt");
     private int[] freq;
+    private double fileSize = 0;
 
     public int[] calculateFreq(File file) throws IOException {
         freq = new int[256];  
@@ -34,6 +35,7 @@ public class Data {
         for(int i = 0; i < freq.length; i++) {
             if(freq[i] > 0)
                 System.out.println("Character: " + (char) i + " Frequency: " + freq[i]);
+            fileSize++;
         }
     }
 
@@ -43,6 +45,10 @@ public class Data {
 
     public int[] getFreq() {
         return freq;
+    }
+
+    public double getFileSize() {
+        return fileSize;
     }
 }
    

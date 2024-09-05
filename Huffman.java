@@ -17,21 +17,25 @@ public class Huffman {
     private static final int MAX_CHAR = 256;
     private String[] huffmanCodes;
     private String data;
+    private double fileSize = 0;
+    private double compressedFileSize = 0;
+    private double headerSize = 0;
 
     public Huffman(File file) {
         this.file = file;
         this.root = null;
         this.huffmanCodes = new String[MAX_CHAR];
         this.freqData = new Data();  
+        this.fileSize = file.length();
     }
 
     private void readDataFromFile() throws IOException {
         data = new String(Files.readAllBytes(Paths.get(file.getPath())));
     }
 
+
     public void calculateFreq() throws IOException {
         freqData.calculateFreq(file);
-        // freqData.printFreq(freqData.getFreq());
     }
 
     public String encode() throws IOException {
@@ -63,6 +67,7 @@ public class Huffman {
                 encodedData.append(code);
             }
         }
+        compressedFileSize = (encodedData.length()) / 8;
 
         return encodedData.toString();
     }
@@ -85,9 +90,11 @@ public class Huffman {
     private String generateHeader(Node root){
         StringBuilder header = new StringBuilder();
         generateTreeStructure(root, header);
+        headerSize = header.length();
         return header.toString();
 
     }
+
 
     private void generateTreeStructure(Node node, StringBuilder header){
         if(node instanceof Leaf) {
@@ -146,9 +153,22 @@ public class Huffman {
                 bw.write(((Leaf) currentNode).getChar());
                 currentNode = root;  
             }
+            compressedFileSize++;
         }
 
         br.close();
         bw.close();
+    }
+
+    public double getFileSize() {
+        return fileSize;
+    }
+
+    public double getCompressedFileSize() {
+        return compressedFileSize;
+    }
+
+    public double getHeaderSize() {
+        return headerSize;
     }
 }
