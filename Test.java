@@ -15,6 +15,7 @@ public class Test {
 
     public static void main(String[] args) throws IOException {
        encodeData();
+       decode();
     }
 
 
@@ -29,9 +30,13 @@ public class Test {
     public static void writeToFile(String encodedData, String header, File file) throws IOException {
        FileWriter fw = new FileWriter(file);
        fw.write(header);
-       fw.write("00000");
        fw.write(encodedData);
        fw.close();
+    }
+
+
+    public static void decode() throws IOException {
+       huff.decodeFromFile(compressedFile, outputFile);
     }
 
 }

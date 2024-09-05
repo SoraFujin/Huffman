@@ -1,6 +1,7 @@
 package com.algo.Huffman;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -91,23 +92,12 @@ public class Huffman {
     private void generateTreeStructure(Node node, StringBuilder header){
         if(node instanceof Leaf) {
             header.append('1');
-            String binaryChar = asciiToBinary(((Leaf) node).getChar());
-            header.append(binaryChar);
+            header.append(((Leaf) node).getChar());
         } else {
             header.append('0');
             generateTreeStructure(node.getLeft(), header);
             generateTreeStructure(node.getRight(), header);
         }
-    }
-
-    private String asciiToBinary(char c) {
-        int asciiValue = c;
-        StringBuilder binary = new StringBuilder();
-        for(int i = 7; i >= 0; i--) {
-            int bit = (asciiValue >> i) & 1;
-            binary.append(bit);
-        }
-        return binary.toString();
     }
 
     public void writeToFile(File file, String encodedData) throws IOException{
@@ -116,5 +106,49 @@ public class Huffman {
         fw.write(header);
         fw.write(encodedData);
         fw.close();
+    }
+
+    private Node readHeader(BufferedReader br) throws IOException {
+        int currentCharacter = br.read(); 
+        if (currentCharacter == -1) {
+            throw new IOException("Unexpected end of file while reading header");
+        }
+
+        if (currentCharacter == '1') {
+            char leafChar = (char) br.read();
+            return new Leaf(leafChar, 0);
+        } else if (currentCharacter == '0') {
+            Node leftChild = readHeader(br);
+            Node rightChild = readHeader(br);
+            return new Node(leftChild, rightChild);
+        }
+
+        throw new IOException("Invalid header format");
+    }
+
+    public void decodeFromFile(File compressedFile, File outputFile) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(compressedFile));
+        BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+
+        Node root = readHeader(br);
+
+        Node currentNode = root;
+        int currentCharacter;
+
+        while ((currentCharacter = br.read()) != -1) {
+            if (currentCharacter == '0') {
+                currentNode = currentNode.getLeft();
+            } else if (currentCharacter == '1') {
+                currentNode = currentNode.getRight();
+            }
+
+            if (currentNode instanceof Leaf) {
+                bw.write(((Leaf) currentNode).getChar());
+                currentNode = root;  
+            }
+        }
+
+        br.close();
+        bw.close();
     }
 }
