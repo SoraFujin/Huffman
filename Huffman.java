@@ -33,7 +33,6 @@ public class Huffman {
         data = new String(Files.readAllBytes(Paths.get(file.getPath())));
     }
 
-
     public void calculateFreq() throws IOException {
         freqData.calculateFreq(file);
     }

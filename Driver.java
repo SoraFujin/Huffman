@@ -70,6 +70,8 @@ public class Driver extends JFrame {
 
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setLocationRelativeTo(null);
     }
 
     private class ChooseFileAction implements ActionListener {

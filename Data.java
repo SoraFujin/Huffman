@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Data {
-    // private final File file = new File("/home/ahmad/Desktop/java/Projects/Algorithms/src/main/java/com/algo/Huffman/input.txt");
     private int[] freq;
     private double fileSize = 0;
 

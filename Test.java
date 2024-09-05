@@ -33,7 +33,6 @@ public class Test {
        writeToFile(encodedData, header, compressedFile);
 
     }
-
          
     public static void writeToFile(String encodedData, String header, File file) throws IOException {
        FileWriter fw = new FileWriter(compressedFile);
